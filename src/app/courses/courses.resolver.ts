@@ -29,7 +29,10 @@ export class CoursesResolver implements Resolve<any> {
                         this.store.dispatch(loadAllCourses());
                     }
                 }),
-                filter(coursesLoaded => coursesLoaded),
+                filter(coursesLoaded => coursesLoaded),  // this is needed, the tap above where we
+                      // get the courses loaded, will cause the observable to terminate/emit...
+                      // we need to terminate/emit only after the courses loaded flag is true, thus we
+                      // add this filter.
                 first(),  // wait for one value to be emitted
                 finalize(() => this.loading = false)
             );
