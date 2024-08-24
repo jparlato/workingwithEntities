@@ -39,6 +39,9 @@ export class HomeComponent implements OnInit {
   reload() {
 
         this.beginnerCourses$ = this.store.pipe(select(selectBeginnerCourses));
+        // not subscribing here... if we did a subscribe, we would need to clean up the
+        // subscription, by unsubscribing.  in this code, in the template, asycn pipe is used and it
+        // manages the subscription and the un-subscribing.
 
         this.advancedCourses$ = this.store.pipe(select(selectAdvancedCourses));
 

@@ -1,8 +1,8 @@
-import {compareCourses, Course} from '../model/course';
-import {createEntityAdapter, EntityState} from '@ngrx/entity';
+import {Course, compareCourses} from '../model/course';
+import {EntityState, createEntityAdapter} from '@ngrx/entity';
 import {createReducer, on} from '@ngrx/store';
-import {CourseActions} from '../action-types';
 
+import {CourseActions} from '../action-types';
 
 export interface CoursesState extends EntityState<Course> {
     allCoursesLoaded: boolean
@@ -10,7 +10,7 @@ export interface CoursesState extends EntityState<Course> {
 
 
 export const adapter = createEntityAdapter<Course>({
-    sortComparer: compareCourses
+    sortComparer: compareCourses  // by default, using 'id' property as selectId value.
 });
 
 
