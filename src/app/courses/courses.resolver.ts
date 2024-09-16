@@ -1,32 +1,29 @@
-import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from '@angular/router';
+import { ActivatedRouteSnapshot, Resolve, RouterStateSnapshot, ResolveFn } from '@angular/router';
 import {Store, select} from '@ngrx/store';
 import {filter, finalize, first, tap} from 'rxjs/operators';
 
-import {AppState} from '../reducers';
-import {Injectable} from '@angular/core';
+import {inject, Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {areCoursesLoaded} from './courses.selectors';
 import {loadAllCourses} from './course.actions';
+import { AppState } from '../reducers/index';
 
 @Injectable()
-export class CoursesResolver implements Resolve<any> {
+export const CoursesResolver: ResolveFn<any> =
 
-    loading = false;
 
-    constructor(private store: Store<AppState>) {
+    (route: ActivatedRouteSnapshot,
+        state: RouterStateSnapshot): Observable<any> => {
+        let loading = false;
 
-    }
-
-    resolve(route: ActivatedRouteSnapshot,
-            state: RouterStateSnapshot): Observable<any> {
-
-        return this.store
+        const store = inject(Store<AppState>);
+        return store
             .pipe(
                 select(areCoursesLoaded),
                 tap(coursesLoaded => {
-                    if (!this.loading && !coursesLoaded) {
-                        this.loading = true;
-                        this.store.dispatch(loadAllCourses());
+                    if (!loading && !coursesLoaded) {
+                        loading = true;
+                        store.dispatch(loadAllCourses());
                     }
                 }),
                 filter(coursesLoaded => coursesLoaded),  // this is needed, the tap above where we
@@ -34,9 +31,7 @@ export class CoursesResolver implements Resolve<any> {
                       // we need to terminate/emit only after the courses loaded flag is true, thus we
                       // add this filter.
                 first(),  // wait for one value to be emitted
-                finalize(() => this.loading = false)
+                finalize(() => loading = false)
             );
 
     }
-
-}
